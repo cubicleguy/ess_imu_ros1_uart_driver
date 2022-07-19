@@ -2,5 +2,5 @@
 Changelog for package ess_imu_ros1_uart_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.1 (2022-07-19)
+------------------
