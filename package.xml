@@ -7,6 +7,7 @@
   <maintainer email="jkeller2@andrew.cmu.edu">John Keller</maintainer>
   <maintainer email="raymond.chow@ea.epson.com">Raymond Chow</maintainer>
   <license>BSD</license>
+  <license>Public Domain</license>
   
   <url type="website">https://wiki.ros.org/ess_sensors/ros1uart</url>
   <url type="repository">https://github.com/cubicleguy/ess_imu_ros1_uart_driver.git</url>

@@ -318,8 +318,3 @@ Attempting to open port.../dev/ttyUSB0
 [ INFO] [1562264278.505628435]: ...Epson IMU initialized.
 
 ```
-
-## License
-
-The Epson IMU ROS Driver and related code is licensed under the BSD-3 License - see the [3-Clause BSD](https://opensource.org/licenses/BSD-3-Clause) for details
-
