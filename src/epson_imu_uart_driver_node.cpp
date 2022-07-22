@@ -125,7 +125,7 @@ bool init(const struct EpsonOptions& options) {
     seRelease();
     return false;
   }
-  return true
+  return true;
   ROS_INFO("Epson IMU initialized.");
 }
 

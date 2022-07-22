@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(epson_imu_uart_driver)
+project(ess_imu_ros1_uart_driver)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -52,12 +52,12 @@ endif ()
 
 # Refer to the readme.txt inside the src folder for more details
 # Uncomment the desired imu_model to build
-set(imu_model "G365PDF0")
+#set(imu_model "G365PDF0")
 #set(imu_model "G365PDF1")
 #set(imu_model "G365PDC0")
 #set(imu_model "G365PDC1")
 #set(imu_model "G370PDF0")
-#set(imu_model "G370PDF1")
+set(imu_model "G370PDF1")
 #set(imu_model "G325PDF0")
 #set(imu_model "G325PDF1")
 #set(imu_model "G354")
@@ -134,17 +134,17 @@ else()
 endif()
 
 # Declare a library for Epson IMU functions from C sources
-add_library(epson_imu_uart_driver_lib
+add_library(ess_imu_ros1_uart_driver_lib
   ${lib_sources}
 )
 
 # Declare a C++ executable
-add_executable(epson_imu_uart_driver_node src/epson_imu_uart_driver_node.cpp)
+add_executable(ess_imu_ros1_uart_driver_node src/epson_imu_uart_driver_node.cpp)
 
 # Link epson C library to executable target ROS node
-target_link_libraries(epson_imu_uart_driver_node
+target_link_libraries(ess_imu_ros1_uart_driver_node
  ${catkin_LIBRARIES}
-  epson_imu_uart_driver_lib
+  ess_imu_ros1_uart_driver_lib
 )
 
 # Debugging
@@ -158,7 +158,7 @@ target_link_libraries(epson_imu_uart_driver_node
 #############
 
 ## Mark executables and/or libraries for installation
-install(TARGETS epson_imu_uart_driver_node
+install(TARGETS ess_imu_ros1_uart_driver_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

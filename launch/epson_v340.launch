@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="epson_imu_uart_driver" type="epson_imu_uart_driver_node" name="epson_imu_uart_driver_node"
+  <node pkg="ess_imu_ros1_uart_driver" type="ess_imu_ros1_uart_driver_node" name="ess_imu_ros1_uart_driver_node"
 	output="screen">
 
     <!-- The name of the serial port to read IMU data from. -->
