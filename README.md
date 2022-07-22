@@ -193,9 +193,9 @@ For more information on ROS & catkin setup refer to
 
 
 1. Place this package (including folders) into a new folder within your catkin workspace "src" folder.
-   For example, we recommend using the folder name "epson_imu_uart_driver"
+   For example, we recommend using the folder name "ess_imu_ros1_uart_driver"
 ```
-   <catkin_workspace>/src/epson_imu_uart_driver/ <-- place files here
+   <catkin_workspace>/src/ess_imu_ros1_uart_driver/ <-- place files here
 ```
 2. Modify the CMakeLists.txt to select the desired Epson IMU model that is attached to the ROS system.
    Refer to the comment lines inside the CMakeLists.txt for additional info.
@@ -261,7 +261,7 @@ time_correction      | enables time correction function using IMU counter reset 
 
    For example, for the Epson G365 IMU:
 ```
-   <catkin_workspace>/roslaunch epson_imu_uart_driver epson_g325_g365.launch
+   <catkin_workspace>/roslaunch ess_imu_ros1_uart_driver epson_g325_g365.launch
 ```
 
    - The launch file contains parameters for configuring settings at runtime:
@@ -285,58 +285,62 @@ time_correction      | enables time correction function using IMU counter reset 
 
 ### Example console output of catkin build for G370PDF1:
 ```
-user@user-VirtualBox:~/catkin_ws$ catkin_make
-Base path: /home/user/catkin_ws
-Source space: /home/user/catkin_ws/src
-Build space: /home/user/catkin_ws/build
-Devel space: /home/user/catkin_ws/devel
-Install space: /home/user/catkin_ws/install
+guest@guest-VirtualBox:~/catkin_ws$ catkin_make
+Base path: /home/guest/catkin_ws
+Source space: /home/guest/catkin_ws/src
+Build space: /home/guest/catkin_ws/build
+Devel space: /home/guest/catkin_ws/devel
+Install space: /home/guest/catkin_ws/install
 ####
-#### Running command: "cmake /home/user/catkin_ws/src -DCATKIN_DEVEL_PREFIX=/home/user/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/user/catkin_ws/install -G Unix Makefiles" in "/home/user/catkin_ws/build"
+#### Running command: "make cmake_check_build_system" in "/home/guest/catkin_ws/build"
 ####
--- Using CATKIN_DEVEL_PREFIX: /home/user/catkin_ws/devel
--- Using CMAKE_PREFIX_PATH: /home/user/catkin_ws/devel;/opt/ros/kinetic
--- This workspace overlays: /home/user/catkin_ws/devel;/opt/ros/kinetic
--- Using PYTHON_EXECUTABLE: /usr/bin/python
+-- Using CATKIN_DEVEL_PREFIX: /home/guest/catkin_ws/devel
+-- Using CMAKE_PREFIX_PATH: /opt/ros/noetic
+-- This workspace overlays: /opt/ros/noetic
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
 -- Using Debian Python package layout
--- Using empy: /usr/bin/empy
+-- Using empy: /usr/lib/python3/dist-packages/em.py
 -- Using CATKIN_ENABLE_TESTING: ON
 -- Call enable_testing()
--- Using CATKIN_TEST_RESULTS_DIR: /home/user/catkin_ws/build/test_results
--- Found gmock sources under '/usr/src/gmock': gmock will be built
--- Found gtest sources under '/usr/src/gmock': gtests will be built
--- Using Python nosetests: /usr/bin/nosetests-2.7
--- catkin 0.7.14
+-- Using CATKIN_TEST_RESULTS_DIR: /home/guest/catkin_ws/build/test_results
+-- Forcing gtest/gmock from source, though one was otherwise available.
+-- Found gtest sources under '/usr/src/googletest': gtests will be built
+-- Found gmock sources under '/usr/src/googletest': gmock will be built
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.10") 
+-- Using Python nosetests: /usr/bin/nosetests3
+-- catkin 0.8.10
+-- BUILD_SHARED_LIBS is on
 -- BUILD_SHARED_LIBS is on
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~  traversing 1 packages in topological order:
--- ~~  - epson_imu_uart_driver
+-- ~~  traversing 2 packages in topological order:
+-- ~~  - beginner_tutorials
+-- ~~  - ess_imu_ros1_uart_driver
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- +++ processing catkin package: 'epson_imu_uart_driver'
--- ==> add_subdirectory(imu_ros_uart_driver)
--- Boost version: 1.58.0
--- Found the following Boost libraries:
---   system
+-- +++ processing catkin package: 'beginner_tutorials'
+-- ==> add_subdirectory(beginner_tutorials)
+-- +++ processing catkin package: 'ess_imu_ros1_uart_driver'
+-- ==> add_subdirectory(ess_imu_ros1_uart_driver)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
 ---- Building for IMU Model: G370PDF1
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/user/catkin_ws/build
+-- Build files have been written to: /home/guest/catkin_ws/build
 ####
-#### Running command: "make -j2 -l2" in "/home/user/catkin_ws/build"
+#### Running command: "make -j1 -l1" in "/home/guest/catkin_ws/build"
 ####
-Scanning dependencies of target epson_imu_uart_driver_lib
-[ 11%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/hcl_gpio.c.o
-[ 22%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/hcl_linux.c.o
-[ 44%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/sensor_epsonCommon.c.o
-[ 44%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/hcl_uart.c.o
-[ 55%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/sensor_epsonUart.c.o
-[ 66%] Building C object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_lib.dir/src/sensor_epsonG370.c.o
-[ 77%] Linking C shared library /home/user/catkin_ws/devel/lib/libepson_imu_uart_driver_lib.so
-[ 77%] Built target epson_imu_uart_driver_lib
-Scanning dependencies of target epson_imu_uart_driver_node
-[ 88%] Building CXX object imu_ros_uart_driver/CMakeFiles/epson_imu_uart_driver_node.dir/src/epson_imu_uart_driver_node.cpp.o
-[100%] Linking CXX executable /home/user/catkin_ws/devel/lib/epson_imu_uart_driver/epson_imu_uart_driver_node
-[100%] Built target epson_imu_uart_driver_node
+Scanning dependencies of target ess_imu_ros1_uart_driver_lib
+[ 11%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/hcl_gpio.c.o
+[ 22%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/hcl_linux.c.o
+[ 33%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/hcl_uart.c.o
+[ 44%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/sensor_epsonCommon.c.o
+[ 55%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/sensor_epsonUart.c.o
+[ 66%] Building C object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_lib.dir/src/sensor_epsonG370.c.o
+[ 77%] Linking C shared library /home/guest/catkin_ws/devel/lib/libess_imu_ros1_uart_driver_lib.so
+[ 77%] Built target ess_imu_ros1_uart_driver_lib
+Scanning dependencies of target ess_imu_ros1_uart_driver_node
+[ 88%] Building CXX object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_node.dir/src/epson_imu_uart_driver_node.cpp.o
+[100%] Linking CXX executable /home/guest/catkin_ws/devel/lib/ess_imu_ros1_uart_driver/ess_imu_ros1_uart_driver_node
 user@user-VirtualBox:~/catkin_ws$ 
 
 ```
@@ -344,75 +348,74 @@ user@user-VirtualBox:~/catkin_ws$
 
 ### Example console output of launching ROS1 node for G370PDF1:
 ```
-user@user-VirtualBox:~/catkin_ws$ roslaunch epson_imu_uart_driver epson_g370.launch 
-... logging to /home/user/.ros/log/86d27c9a-09bc-11eb-9ac8-080027cb8bd1/roslaunch-user-VirtualBox-4076.log
-Checking log directory for disk usage. This may take awhile.
+guest@guest-VirtualBox:~/catkin_ws$ roslaunch ess_imu_ros1_uart_driver epson_g370.launch 
+... logging to /home/guest/.ros/log/2c19a2fa-09de-11ed-b9c7-1dd2c95e9576/roslaunch-guest-VirtualBox-68073.log
+Checking log directory for disk usage. This may take a while.
 Press Ctrl-C to interrupt
 Done checking log file disk usage. Usage is <1GB.
 
-started roslaunch server http://user-VirtualBox:35841/
+started roslaunch server http://guest-VirtualBox:33993/
 
 SUMMARY
 ========
 
 PARAMETERS
- * /epson_imu_uart_driver_node/accel_bit: 1
- * /epson_imu_uart_driver_node/accel_delta_bit: 1
- * /epson_imu_uart_driver_node/accel_delta_out: 0
- * /epson_imu_uart_driver_node/accel_out: 1
- * /epson_imu_uart_driver_node/atti_bit: 1
- * /epson_imu_uart_driver_node/atti_out: 0
- * /epson_imu_uart_driver_node/checksum_out: 1
- * /epson_imu_uart_driver_node/count_out: 1
- * /epson_imu_uart_driver_node/dout_rate: 9
- * /epson_imu_uart_driver_node/drdy_on: 0
- * /epson_imu_uart_driver_node/drdy_pol: 0
- * /epson_imu_uart_driver_node/ext_pol: 0
- * /epson_imu_uart_driver_node/ext_sel: 0
- * /epson_imu_uart_driver_node/filter_sel: 9
- * /epson_imu_uart_driver_node/flag_out: 1
- * /epson_imu_uart_driver_node/gpio_out: 0
- * /epson_imu_uart_driver_node/gyro_bit: 1
- * /epson_imu_uart_driver_node/gyro_delta_bit: 1
- * /epson_imu_uart_driver_node/gyro_delta_out: 0
- * /epson_imu_uart_driver_node/gyro_out: 1
- * /epson_imu_uart_driver_node/invert_xaccel: 0
- * /epson_imu_uart_driver_node/invert_xgyro: 0
- * /epson_imu_uart_driver_node/invert_yaccel: 0
- * /epson_imu_uart_driver_node/invert_ygyro: 0
- * /epson_imu_uart_driver_node/invert_zaccel: 0
- * /epson_imu_uart_driver_node/invert_zgyro: 0
- * /epson_imu_uart_driver_node/port: /dev/ttyUSB0
- * /epson_imu_uart_driver_node/temp_bit: 1
- * /epson_imu_uart_driver_node/temp_out: 1
- * /epson_imu_uart_driver_node/time_correction: 0
- * /rosdistro: kinetic
- * /rosversion: 1.12.14
+ * /ess_imu_ros1_uart_driver_node/accel_bit: 1
+ * /ess_imu_ros1_uart_driver_node/accel_delta_bit: 1
+ * /ess_imu_ros1_uart_driver_node/accel_delta_out: 0
+ * /ess_imu_ros1_uart_driver_node/accel_out: 1
+ * /ess_imu_ros1_uart_driver_node/atti_bit: 1
+ * /ess_imu_ros1_uart_driver_node/atti_out: 0
+ * /ess_imu_ros1_uart_driver_node/checksum_out: 1
+ * /ess_imu_ros1_uart_driver_node/count_out: 1
+ * /ess_imu_ros1_uart_driver_node/dout_rate: 9
+ * /ess_imu_ros1_uart_driver_node/drdy_on: 0
+ * /ess_imu_ros1_uart_driver_node/drdy_pol: 0
+ * /ess_imu_ros1_uart_driver_node/ext_pol: 0
+ * /ess_imu_ros1_uart_driver_node/ext_sel: 0
+ * /ess_imu_ros1_uart_driver_node/filter_sel: 9
+ * /ess_imu_ros1_uart_driver_node/flag_out: 1
+ * /ess_imu_ros1_uart_driver_node/gpio_out: 0
+ * /ess_imu_ros1_uart_driver_node/gyro_bit: 1
+ * /ess_imu_ros1_uart_driver_node/gyro_delta_bit: 1
+ * /ess_imu_ros1_uart_driver_node/gyro_delta_out: 0
+ * /ess_imu_ros1_uart_driver_node/gyro_out: 1
+ * /ess_imu_ros1_uart_driver_node/invert_xaccel: 0
+ * /ess_imu_ros1_uart_driver_node/invert_xgyro: 0
+ * /ess_imu_ros1_uart_driver_node/invert_yaccel: 0
+ * /ess_imu_ros1_uart_driver_node/invert_ygyro: 0
+ * /ess_imu_ros1_uart_driver_node/invert_zaccel: 0
+ * /ess_imu_ros1_uart_driver_node/invert_zgyro: 0
+ * /ess_imu_ros1_uart_driver_node/port: /dev/ttyUSB0
+ * /ess_imu_ros1_uart_driver_node/temp_bit: 1
+ * /ess_imu_ros1_uart_driver_node/temp_out: 1
+ * /ess_imu_ros1_uart_driver_node/time_correction: 0
+ * /rosdistro: noetic
+ * /rosversion: 1.15.14
 
 NODES
   /
-    epson_imu_uart_driver_node (epson_imu_uart_driver/epson_imu_uart_driver_node)
+    ess_imu_ros1_uart_driver_node (ess_imu_ros1_uart_driver/ess_imu_ros1_uart_driver_node)
 
 auto-starting new master
-process[master]: started with pid [4086]
+process[master]: started with pid [68081]
 ROS_MASTER_URI=http://localhost:11311
 
-setting /run_id to 86d27c9a-09bc-11eb-9ac8-080027cb8bd1
-process[rosout-1]: started with pid [4099]
+setting /run_id to 2c19a2fa-09de-11ed-b9c7-1dd2c95e9576
+process[rosout-1]: started with pid [68091]
 started core service [/rosout]
-process[epson_imu_uart_driver_node-2]: started with pid [4113]
-[ INFO] [1602199089.860563057]: Initializing HCL layer...
-[ INFO] [1602199089.860739911]: Initializing GPIO interface...
-[ INFO] [1602199089.860788758]: Initializing UART interface...
+process[ess_imu_ros1_uart_driver_node-2]: started with pid [68098]
+[ INFO] [1658508535.570966373]: Initializing HCL layer...
+[ INFO] [1658508535.573199394]: Initializing GPIO interface...
+[ INFO] [1658508535.573240446]: Initializing UART interface...
 Attempting to open port.../dev/ttyUSB0
 
-...sensorDummyWrite.[ INFO] [1602199090.122510210]: Checking sensor NOT_READY status...
-...done.[ INFO] [1602199091.016903361]: Initializing Sensor...
-[ INFO] [1602199091.058212107]: Epson IMU initialized.
-[ INFO] [1602199091.122874894]: PRODUCT ID:	G370PDF1
-[ INFO] [1602199091.186292139]: SERIAL ID:	X0000002
+...sensorDummyWrite.[ INFO] [1658508535.846582632]: Checking sensor NOT_READY status...
+...done.[ INFO] [1658508536.709401928]: Initializing Sensor...
+[ INFO] [1658508536.789099009]: PRODUCT ID:	G370PDF1
+[ INFO] [1658508536.856388807]: SERIAL ID:	X0000002
 
-...Sensor start.[ INFO] [1602199091.187993504]: Quaternion Output: Native.
+...Sensor start.[ INFO] [1658508536.859844867]: Quaternion Output: Native.
 
 ```
 
