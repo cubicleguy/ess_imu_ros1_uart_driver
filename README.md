@@ -7,17 +7,15 @@
 * The src/epson_imu_uart_driver_node.cpp is the ROS C++ wrapper used to communicate with ROS
 * The other source files in src/ are based on the C driver released by Epson:
   [Epson IMU UART-only Linux User-space Driver Example](https://vdc.epson.com/imu-products/imu-inertial-measurement-units)
-
 * Information about ROS, ROS packages, and tutorials can be found: [ROS.org](https://www.ros.org)
+
 
 ## What kind of hardware or software will I likely need?
 
 This will likely require the following:
 
 * Epson USB evaluation board or equivalent FTDI USB-Serial interface to connect to ROS host (tty/serial) [See Evaluation Boards](https://global.epson.com/products_and_drivers/sensing_system/technical_info/evaluation_tools/)
-
 * Epson IMU (V340/G320/G325/G354/G364/G365/G370) [IMU models](https://global.epson.com/products_and_drivers/sensing_system/imu/)
-
 * ROS Indigo or later (via download) [ROS.org](https://www.ros.org)
 
 
@@ -62,9 +60,8 @@ This will likely require the following:
 For example on an Raspberry Pi, the following changes can be made to hcl_linux.c:
 
 ```
-  .
-  .
-  .
+...
+
   #include <stdint.h>
   #include <stdio.h>
   #include <wiringPi.h>  // <== Added external library
@@ -81,10 +78,8 @@ For example on an Raspberry Pi, the following changes can be made to hcl_linux.c
 
     return OK;
   }
-  .
-  .
-  .
 
+...
 ```
 
 * Typically, the GPIO pins need to be assigned according to pin numbering specific to the HW platform.
@@ -98,10 +93,11 @@ For example on an Raspberry Pi, the following changes to hcl_gpio.h with the fol
     ---------------------------------------------------
     EPSON_RESET                 RPI_GPIO_P1_15 (GPIO22) Output
     EPSON_DRDY                  RPI_GPIO_P1_18 (GPIO24) Input
-
 ```
 
 ```
+...
+
   // Prototypes for generic GPIO functions
   int gpioInit(void);
   int gpioRelease(void);
@@ -115,9 +111,7 @@ For example on an Raspberry Pi, the following changes to hcl_gpio.h with the fol
 
   #define EPSON_RESET                 RPI_GPIO_P1_15        // <== Added
   #define EPSON_DRDY                  RPI_GPIO_P1_18        // <== Added
-  .
-  .
-  .
+...
 ```
 
 
@@ -133,9 +127,8 @@ For example on an Raspberry Pi, the following changes to hcl_gpio.h with the fol
   #include "hcl.h"
   #include "hcl_gpio.h"
   #include <wiringPi.h>                         // <== Added external library
-  .
-  .
-  .
+
+...
 
   int gpioInit(void)
   {
@@ -145,40 +138,36 @@ For example on an Raspberry Pi, the following changes to hcl_gpio.h with the fol
 
     return OK;
   }
-  .
-  .
-  .
+
+...
+
   int gpioRelease(void)
   {
     return OK;
   }
-  .
-  .
-  .
+
+...
+
   void gpioSet(uint8_t pin)
   {
     digitalWrite(pin, HIGH);                    // <== Added external call set pin HIGH
   }
 
-  .
-  .
-  .
+  ...
+
   void gpioClr(uint8_t pin)
   {
     digitalWrite(pin, LOW);                     // <== Added external call set pin LOW
   }
 
-  .
-  .
-  .
+  ...
+
   uint8_t gpioGetPinLevel(uint8_t pin)
   {
     return (digitalRead(pin));                  // <== Added external call to return pin state of input pin
   }
 
-  .
-  .
-  .
+  ...
 ```
 
 
@@ -202,14 +191,13 @@ For more information on ROS & catkin setup refer to
    *NOTE:* You *MUST* re-build using catkin_make when changing IMU models or any changes in the CmakeLists.txt
 
 3. From the catkin workspace folder run "catkin_make" to build all ROS1 packages located in the <catkin_workspace>/src/ folder.
+   Re-run the above "catkin_make" command to rebuild the driver after making any changes to the CMakeLists.txt, any of the .c or .cpp or .h source files.
+   *NOTE:* It is not necessary to "catkin_make" if changes are only made to the launch files.
+   *NOTE:* It is recommended to change IMU settings by editing the parameters in the launch file, wherever possible, instead of modifying the .c or .cpp source files directly
 
 ```
    <catkin_workspace>/catkin_make
 ```
-   Re-run the above "catkin_make" command to rebuild the driver after making any changes to the CMakeLists.txt or any of the .c or .cpp or .h source files.
-   It is not necessary to "catkin_make" if changes are only made to the launch files
-
-   *NOTE:* It is recommended to change IMU settings by editing the parameters in the launch file, wherever possible, instead of modifying the .c or .cpp source files directly
 
 4. Reload the current ROS environment variables that may have changed after the catkin build process.
 ```
@@ -219,68 +207,58 @@ For more information on ROS & catkin setup refer to
 5. Modify the appropriate launch file for the IMU model in the launch/ folder to set your desired IMU configure parameter options at runtime:
 
 
-Parameter            | Comment
--------------------- | -------------
-ext_sel              | specifies the function of the GPIO2 (GPIO2, External Trigger, External Counter Reset)
-ext_pol              | specifies the polarity of the GPIO2 pin when External Trigger or External Counter Reset is selected
-drdy_on              | specifies to enable DRDY function on GPIO1
-drdy_pol             | specifies the polarity of the DRDY input pin when enabled
-dout_rate            | specifies the IMU output data rate
-filter_sel           | specifies the IMU filter setting
-flag_out             | specifies to enable or disable ND_FLAG status in IMU output data (not used by ROS)
-temp_out             | specifies to enable or disable TempC sensor in IMU output data (not used by ROS)
-gyro_out             | specifies to enable or disable Gyro sensor in IMU output data (must be enabled)
-accel_out            | specifies to enable or disable Accl sensor in IMU output data (must be enabled)
-gyro_delta_out       | specifies to enable or disable DeltaAngle in IMU output data (not used by ROS)
-accel_delta_out      | specifies to enable or disable DeltaVelocity in IMU output data (not used by ROS)
-qtn_out              | specifies to enable or disable Quaternion in IMU output data (only support for G325/G365)
-atti_out             | specifies to enable or disable Attitude in IMU output data (not used by ROS)
-gpio_out             | specifies to enable or disable GPIO in IMU output data (not used by ROS)
-count_out            | specifies to enable or disable counter in IMU output data (must be enabled when time_correction is enabled)
-checksum_out         | specifies to enable or disable checksum in IMU output data (when enabled checksum errors are detected)
-temp_bit             | specifies to 16 or 32 bit resolution in TempC output data (not used by ROS)
-gyro_bit             | specifies to 16 or 32 bit resolution in Gyro output data
-accel_bit            | specifies to 16 or 32 bit resolution in Accl output data
-gyro_delta_bit       | specifies to 16 or 32 bit resolution in DeltaAngle output data (not used by ROS)
-accel_delta_bit      | specifies to 16 or 32 bit resolution in DeltaVelocity output data (not used by ROS)
-qtn_bit              | specifies to 16 or 32 bit resolution in Quaternion output data (only support for G325/G365)
-invert_xgyro         | specifies to reverse polarity of this sensor axis
-invert_ygyro         | specifies to reverse polarity of this sensor axis
-invert_zgyro         | specifies to reverse polarity of this sensor axis
-invert_xaccel        | specifies to reverse polarity of this sensor axis
-invert_yaccel        | specifies to reverse polarity of this sensor axis
-invert_zaccel        | specifies to reverse polarity of this sensor axis
-atti_mode            | specifies the attitude mode as 0=inclination or 1=euler (only support for G325/G365)
-atti_profile         | specifies the attitude motion profile (supported only for G325PDF1 or G365PDF1)
-time_correction      | enables time correction function using IMU counter reset function & external 1PPS connection to IMU GPIO2/EXT pin. Must have ext_sel=1 (external counter reset)
+Launch File Parameter | Comment
+--------------------- | -------------
+ext_sel               | specifies the function of the GPIO2 (GPIO2, External Trigger, External Counter Reset)
+ext_pol               | specifies the polarity of the GPIO2 pin when External Trigger or External Counter Reset is selected
+drdy_on               | specifies to enable DRDY function on GPIO1
+drdy_pol              | specifies the polarity of the DRDY input pin when enabled
+dout_rate             | specifies the IMU output data rate
+filter_sel            | specifies the IMU filter setting
+flag_out              | specifies to enable or disable ND_FLAG status in IMU output data (not used by ROS)
+temp_out              | specifies to enable or disable TempC sensor in IMU output data (not used by ROS)
+gyro_out              | specifies to enable or disable Gyro sensor in IMU output data (must be enabled)
+accel_out             | specifies to enable or disable Accl sensor in IMU output data (must be enabled)
+gyro_delta_out        | specifies to enable or disable DeltaAngle in IMU output data (not used by ROS)
+accel_delta_out       | specifies to enable or disable DeltaVelocity in IMU output data (not used by ROS)
+qtn_out               | specifies to enable or disable Quaternion in IMU output data (only support for G325/G365)
+atti_out              | specifies to enable or disable Attitude in IMU output data (not used by ROS)
+gpio_out              | specifies to enable or disable GPIO in IMU output data (not used by ROS)
+count_out             | specifies to enable or disable counter in IMU output data (must be enabled when time_correction is enabled)
+checksum_out          | specifies to enable or disable checksum in IMU output data (when enabled checksum errors are detected)
+temp_bit              | specifies to 16 or 32 bit resolution in TempC output data (not used by ROS)
+gyro_bit              | specifies to 16 or 32 bit resolution in Gyro output data
+accel_bit             | specifies to 16 or 32 bit resolution in Accl output data
+gyro_delta_bit        | specifies to 16 or 32 bit resolution in DeltaAngle output data (not used by ROS)
+accel_delta_bit       | specifies to 16 or 32 bit resolution in DeltaVelocity output data (not used by ROS)
+qtn_bit               | specifies to 16 or 32 bit resolution in Quaternion output data (only support for G325/G365)
+invert_xgyro          | specifies to reverse polarity of this sensor axis
+invert_ygyro          | specifies to reverse polarity of this sensor axis
+invert_zgyro          | specifies to reverse polarity of this sensor axis
+invert_xaccel         | specifies to reverse polarity of this sensor axis
+invert_yaccel         | specifies to reverse polarity of this sensor axis
+invert_zaccel         | specifies to reverse polarity of this sensor axis
+atti_mode             | specifies the attitude mode as 0=inclination or 1=euler (only support for G325/G365)
+atti_profile          | specifies the attitude motion profile (supported only for G325PDF1 or G365PDF1)
+time_correction       | enables time correction function using IMU counter reset function & external 1PPS connection to IMU GPIO2/EXT pin. Must have ext_sel=1 (external counter reset)
 
    *NOTE:* The ROS1 launch file passes IMU configuration settings to the IMU at runtime.
            Therefore does not need rebuilding with catkin when changing the launch file.
 
-6. To start the Epson IMU ROS1 driver use the appropriate launch file (located in launch/) from console.
+6. To start the Epson IMU ROS1 driver use the appropriate launch file (located in launch/) from console. All parameters are described in the inline comments of the launch file. The launch file contains parameters for configuring settings at runtime.
 
    For example, for the Epson G365 IMU:
 ```
    <catkin_workspace>/roslaunch ess_imu_ros1_uart_driver epson_g325_g365.launch
 ```
 
-   - The launch file contains parameters for configuring settings at runtime:
-   - All parameters are described in the inline comments of the launch file.
-
-     *epson_g320_g354_g364.launch*
-       - For G320/G354/G364, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
-
-     *epson_g325_g365.launch*
-       - For G325PDF1/G365PDx1, outputs to ROS topic imu/data (gyro, accel data, including quaternion orientation)
-
-     *epson_g325_g365_raw.launch*
-       - For G325PDF0/G365PDx0, outputs to ROS topic imu/data_raw (gyro, accel data, but no quaternion orientation)
-
-     *epson_g370.launch*
-       - For G370, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
-
-     *epson_v340.launch*
-       - For V340, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
+Launch File                   | Description
+----------------------------- | --------------------------------------
+epson_g320_g354_g364.launch   | For G320/G354/G364, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
+epson_g325_g365.launch        | For G325PDF1/G365PDx1, outputs to ROS topic imu/data (gyro, accel data, including quaternion orientation)
+epson_g325_g365_raw.launch    | For G325PDF0/G365PDx0, outputs to ROS topic imu/data_raw (gyro, accel data, but no quaternion orientation)
+epson_g370.launch             | For G370, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
+epson_v340.launch             | For V340, outputs to ROS topic imu/data_raw (gyro, accel, but no quaternion orientation)
 
 
 ### Example console output of catkin build for G370PDF1:
@@ -297,7 +275,7 @@ Install space: /home/guest/catkin_ws/install
 -- Using CATKIN_DEVEL_PREFIX: /home/guest/catkin_ws/devel
 -- Using CMAKE_PREFIX_PATH: /opt/ros/noetic
 -- This workspace overlays: /opt/ros/noetic
--- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3")
 -- Using PYTHON_EXECUTABLE: /usr/bin/python3
 -- Using Debian Python package layout
 -- Using empy: /usr/lib/python3/dist-packages/em.py
@@ -307,14 +285,12 @@ Install space: /home/guest/catkin_ws/install
 -- Forcing gtest/gmock from source, though one was otherwise available.
 -- Found gtest sources under '/usr/src/googletest': gtests will be built
 -- Found gmock sources under '/usr/src/googletest': gmock will be built
--- Found PythonInterp: /usr/bin/python3 (found version "3.8.10") 
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.10")
 -- Using Python nosetests: /usr/bin/nosetests3
 -- catkin 0.8.10
 -- BUILD_SHARED_LIBS is on
--- BUILD_SHARED_LIBS is on
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- ~~  traversing 2 packages in topological order:
--- ~~  - beginner_tutorials
+-- ~~  traversing 1 packages in topological order:
 -- ~~  - ess_imu_ros1_uart_driver
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- +++ processing catkin package: 'beginner_tutorials'
@@ -341,14 +317,14 @@ Scanning dependencies of target ess_imu_ros1_uart_driver_lib
 Scanning dependencies of target ess_imu_ros1_uart_driver_node
 [ 88%] Building CXX object ess_imu_ros1_uart_driver/CMakeFiles/ess_imu_ros1_uart_driver_node.dir/src/epson_imu_uart_driver_node.cpp.o
 [100%] Linking CXX executable /home/guest/catkin_ws/devel/lib/ess_imu_ros1_uart_driver/ess_imu_ros1_uart_driver_node
-user@user-VirtualBox:~/catkin_ws$ 
+user@user-VirtualBox:~/catkin_ws$
 
 ```
 
 
 ### Example console output of launching ROS1 node for G370PDF1:
 ```
-guest@guest-VirtualBox:~/catkin_ws$ roslaunch ess_imu_ros1_uart_driver epson_g370.launch 
+guest@guest-VirtualBox:~/catkin_ws$ roslaunch ess_imu_ros1_uart_driver epson_g370.launch
 ... logging to /home/guest/.ros/log/2c19a2fa-09de-11ed-b9c7-1dd2c95e9576/roslaunch-guest-VirtualBox-68073.log
 Checking log directory for disk usage. This may take a while.
 Press Ctrl-C to interrupt
@@ -412,30 +388,27 @@ Attempting to open port.../dev/ttyUSB0
 
 ...sensorDummyWrite.[ INFO] [1658508535.846582632]: Checking sensor NOT_READY status...
 ...done.[ INFO] [1658508536.709401928]: Initializing Sensor...
-[ INFO] [1658508536.789099009]: PRODUCT ID:	G370PDF1
-[ INFO] [1658508536.856388807]: SERIAL ID:	X0000002
+[ INFO] [1658508536.789099009]: PRODUCT ID: G370PDF1
+[ INFO] [1658508536.856388807]: SERIAL ID:  X0000002
 
 ...Sensor start.[ INFO] [1658508536.859844867]: Quaternion Output: Native.
 
 ```
 
 
-## What does this ROS1 IMU Node Publish as an Messages?
-
-The Epson IMU ROS1 driver will publish messages which will vary slightly on the IMU model and output configuration.
-- For IMU models such as G320/G354/G364/G370/V340, the IMU messages will only contain fields for angular rate (gyro) and linear acceleration (accel) data.
-- For IMU models G325/G365 there is internal attitude function with quaternion output:
-  - IMU messages can output orientation using the internal extended Kalman Filter when the quaternion output is *enabled*.
-  - IMU messages will only contain angular rate (gyro) and linear acceleration (accel) data when quaternion output is *disabled*.
+## What does this ROS1 IMU Node Publish as messages?
 
 The Epson IMU ROS1 driver will publish IMU messages as convention per [REP 145](http://www.ros.org/reps/rep-0145.html).
 
+- For IMU models such as G320/G354/G364/G370/V340, the IMU messages will only update the fields for angular rate (gyro) and linear acceleration (accel) data.
+- For IMU models G325/G365, it depends on the enabling/disabling of the internal attitude function with quaternion output:
+  - IMU messages will only update angular rate (gyro) and linear acceleration (accel) fields when quaternion output is *disabled*
+  - IMU messages will also update the orientation field using the internal extended Kalman Filter when the quaternion output is *enabled*
+
+
 ### Without Quaternion Output
-For non-quaternion output models, the ROS1 driver will publish to the following ROS topics:
-```
-/epson_imu/data_raw <-- orientation field will not contain valid data & should be ignored
-```
-*NOTE* The launch file will remap the message to publish on /imu/data_raw
+- When quaternion output is disabled or for non-quaternion output models, the ROS1 driver will publish to ROS topic */epson_imu/data_raw*
+- However, the launch file will *remap* the message to publish on ROS topic */imu/data_raw*
 
 
 #### ROS Topic Message data_raw
@@ -468,12 +441,8 @@ linear_acceleration_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 ```
 
 ### With Quaternion Output
-For quaternion output models, the ROS1 driver will publish to the following ROS topics:
-
-```
-/epson_imu/data <-- orientation field will contain quaternions
-```
-*NOTE* The launch file will remap the message to publish on /imu/data
+- When quaternion output is enabled, the ROS1 driver will publish to ROS topic */epson_imu/raw*
+- However, the launch file will *remap* the message to publish to ROS topic */imu/raw*
 
 #### ROS Topic Message data
 
@@ -506,18 +475,18 @@ linear_acceleration_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 
 ## Why am I seeing high latencies or slower than expected IMU data rates when using USB-UART bridges?
-   
-If your connection between the Epson IMU UART and the Linux host is by FTDI (or similar USB-UART bridge devices,
-the default latency_timer setting may be too large (i.e. typically 16msec).
 
-There are 2 recommended methods to reduce this value to 1msec.
+- If your connection between the Epson IMU UART and the Linux host is by FTDI (or similar USB-UART bridge devices,
+the default latency_timer setting may be too large (i.e. typically 16msec).
+- It is recommended to set the USB latency timer to 1msec to minimize latency issues.
+
 
 ### Modifying latency_timer by sysfs mechanism
 
 The example below reads the latency_timer setting for /dev/ttyUSB0 which returns 16msec.
 Then, the latency_timer is set to 1msec, and confirmed by readback.
 
-*NOTE*: May require root (sudo su) access on your system to modify. 
+*NOTE*: May require root (sudo su) access on your system to modify.
 ```
 cat /sys/bus/usb-serial/devices/ttyUSB0/latency_timer
 16
@@ -548,8 +517,9 @@ user@user-VirtualBox:~$ setserial /dev/ttyUSB0
 The Epson IMU ROS1 driver-related sub-folders & root files are:
 ```
    launch/        <== various example launch files for Epson IMU models
-   src/           <== source code for ROS node C++ wrapper, IMU C driver, and additional README_src.md
-   CmakeLists.txt <== build script for catkin_make
+   src/           <== source code for ROS node C++ wrapper, IMU C driver, and additional README_src.md specifically for buidling and using the IMU C driver alone (without ROS support)
+   CMakeLists.txt <== build script for catkin_make
+   LICENSE.txt    <== description of the applicable licenses
    package.xml    <== catkin package description
    README.md      <== general README for the ROS1 driver
 ```
@@ -564,8 +534,8 @@ Refer to the README_visual.md in the visual folder for more info.
 
 ## Generating Orientation from Gyroscope & Accelerometer Messages
 
-In many cases, the ROS system needs fused orientation data, but there may be Epson IMU models that do not have quaternion output function.
-In such cases, it is possible to use other opensource ROS IMU filter packages to subscribe to gyro & accelerometer messages --> post-process
+In many cases, the ROS system needs fused orientation data, but there are Epson IMU models that do not have quaternion output function.
+In such cases, it is possible to use other opensource ROS packages to subscribe to gyro & accelerometer messages --> post-process
 --> publish fused orientation messages.
 
 Some examples that have been briefly tested are:
@@ -574,13 +544,17 @@ Some examples that have been briefly tested are:
 
 *NOTE:*
 
-The Epson IMU ROS Driver node needs to be correctly started and publishing before starting these other filter package nodes.
+The Epson IMU ROS Driver node needs to be correctly started and publishing before starting the other filter package nodes.
 
 ### imu_filter_madgwick usage notes
-- imu_filter_madgwick/cfg/ImuFilterMadwick.cfg modified with "gain" set to 0.01
-- imu_filter_madgwick/src/imu_filter_ros.cpp modified with "use_mag_" set to "false"
-- imu_filter_madgwick/src/imu_filter_ros.cpp modified with "publish_debug_topics_" set to "true", for debugging only
-- imu_filter_madgwick/src/imu_filter_ros.cpp modified with "world_frame" set to "enu"
+- Modify the imu_filter_madgwick/cfg/ImuFilterMadwick.cfg
+  - modified with "gain" set to 0.01
+- Modify the imu_filter_madgwick/src/imu_filter_ros.cpp
+  - modified with "use_mag_" set to "false"
+  - modified with "publish_debug_topics_" set to "true", for debugging only
+  - modified with "world_frame" set to "enu"
+- Build the package using catkin_make
+- Run the package using rosrun
 
 Below is an example of the console output of properly run imu_filter_madgwick node using *rosrun*:
 ```
@@ -596,11 +570,14 @@ user@user-VirtualBox:~$ rosrun imu_filter_madgwick imu_filter_node
 ```
 
 ### imu_complementary_filter usage notes
-- imu_complementary_filter/launch/complementary_filter.launch delete section "IMU Driver", since the Epson IMU driver will provide the driver services
-- imu_complementary_filter/launch/complementary_filter.launch set "do_bias_estimation" to "false" to disable software bias estimation using thresholding
-- imu_complementary_filter/launch/complementary_filter.launch set "use_mag" to "false", since Epson IMUs do not have magnetometers
-- imu_complementary_filter/launch/complementary_filter.launch set "publish_tf" to "true", for debugging only
-- imu_complementary_filter/launch/complementary_filter.launch set "publish_debug_topics" to "true",for debugging only
+- Build the package using catkin_make
+- Modify the imu_complementary_filter/launch/complementary_filter.launch
+  - delete section "IMU Driver", since the Epson IMU driver will provide the driver services
+  - set "do_bias_estimation" to "false" to disable software bias estimation using thresholding
+  - set "use_mag" to "false", since Epson IMUs do not have magnetometers
+  - set "publish_tf" to "true", for debugging only
+  - set "publish_debug_topics" to "true", for debugging only
+- Launch the package using roslaunch
 
 Below is an example of the console output of properly launched imu_complementary_filter node:
 ```
