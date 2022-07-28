@@ -12,10 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
 )
 
-## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS
-  thread)
-
 
 ###################################
 ## catkin specific configuration ##
@@ -43,7 +39,6 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
 )
 
 
@@ -146,25 +141,20 @@ else()
 endif()
 
 # Declare a library for Epson IMU functions from C sources
-add_library(ess_imu_ros1_uart_driver_lib
+add_library(ess_imu_ros1_uart_driver
   ${lib_sources}
 )
 
 # Declare a C++ executable
-add_executable(ess_imu_ros1_uart_driver_node src/epson_imu_uart_driver_node.cpp)
+add_executable(ess_imu_ros1_uart_driver_node
+  src/epson_imu_uart_driver_node.cpp
+)
 
 # Link epson C library to executable target ROS node
 target_link_libraries(ess_imu_ros1_uart_driver_node
   ${catkin_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ess_imu_ros1_uart_driver_lib
+  ess_imu_ros1_uart_driver
 )
-
-# Debugging
-#message(INFO "${catkin_LIBRARIES}")
-#message(INFO "${catkin_INCLUDE_DIRS}")
-#message(INFO "${wiringPi_LIB}")
-#message(INFO "${lib_sources}")
 
 #############
 ## Install ##
