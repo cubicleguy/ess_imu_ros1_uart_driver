@@ -13,7 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS
+  thread)
+
 
 ###################################
 ## catkin specific configuration ##
@@ -25,6 +27,12 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+  CATKIN_DEPENDS
+  roscpp
+  sensor_msgs
+  std_msgs
+  geometry_msgs
+  tf2
 )
 
 ###########
@@ -35,7 +43,9 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
+
 
 # Specify compiler options
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
@@ -145,7 +155,8 @@ add_executable(ess_imu_ros1_uart_driver_node src/epson_imu_uart_driver_node.cpp)
 
 # Link epson C library to executable target ROS node
 target_link_libraries(ess_imu_ros1_uart_driver_node
- ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
   ess_imu_ros1_uart_driver_lib
 )
 
