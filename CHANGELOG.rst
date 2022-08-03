@@ -2,8 +2,8 @@
 Changelog for package ess_imu_ros1_uart_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.3.2 (2022-08-03)
+------------------
 * update cmake_minimum_required to avoid unstable build on buildfarm due to CMP0048 warning
 * update README.md for name change in package.xml, CMakeLists.txt
 * add dependency geometry_msgs and tf2
