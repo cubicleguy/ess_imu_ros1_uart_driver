@@ -8,7 +8,7 @@
   <license>BSD</license>
   <license>Public Domain</license>
   
-  <url type="website">https://wiki.ros.org/ess_sensors/ros1uart</url>
+  <url type="website">https://wiki.ros.org/ess_imu_ros1_uart_driver</url>
   <url type="repository">https://github.com/cubicleguy/ess_imu_ros1_uart_driver.git</url>
   
   <buildtool_depend>catkin</buildtool_depend>
