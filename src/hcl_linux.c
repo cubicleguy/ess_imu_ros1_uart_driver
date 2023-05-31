@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "hcl.h"
 
 /*****************************************************************************
@@ -32,7 +33,7 @@ int seInit(void) { return OK; }
 ** Function name:       seRelease
 ** Description:         Release any resources held by this module.
 ** Parameters:          None
-** Return value:        1=OK
+** Return value:        OK
 *****************************************************************************/
 int seRelease(void) { return OK; }
 

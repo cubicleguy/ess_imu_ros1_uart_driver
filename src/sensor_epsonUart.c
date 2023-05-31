@@ -27,7 +27,7 @@ extern int fd_serial;          // COM port handle
 #define EPSON_STALL 134  // Microseconds
 
 // UART Byte Markers
-#ifdef V340
+#ifdef V340PDD0
 const unsigned char UART_HEADER =
     0x20;  // Placed at the start of all UART cycles
 #else
@@ -104,8 +104,7 @@ void registerWriteByteNoId(unsigned char regAddr, unsigned char regByte,
 *****************************************************************************/
 void registerWriteByte(unsigned char winNumber, unsigned char regAddr,
                        unsigned char regByte, unsigned int verbose) {
-
-#if !(defined G350 || defined V340)
+#if !(defined G350 || defined V340PDD0)
   unsigned char txData[3];
 
   txData[0] = ADDR_WIN_CTRL | 0x80;  // msb is 1b for register writes
@@ -167,8 +166,7 @@ unsigned short registerRead16NoId(unsigned char regAddr, unsigned int verbose) {
 *****************************************************************************/
 unsigned short registerRead16(unsigned char winNumber, unsigned char regAddr,
                               unsigned int verbose) {
-
-#if !(defined G350 || defined V340)
+#if !(defined G350 || defined V340PDD0)
   unsigned char txData[3];
 
   txData[0] = ADDR_WIN_CTRL | 0x80;
@@ -235,7 +233,7 @@ void populateEpsonData(struct EpsonOptions options,
   // stores the sensor data array index when parsing out data fields
   int idx = 0;
 
-#ifdef V340
+#ifdef V340PDD0
   // Fixed packet format except for enabling/disabling count_out
   unsigned short ndflags = (rxByteBuf[idx] << 8) + rxByteBuf[idx + 1];
   epson_data->ndflags = ndflags;
@@ -279,11 +277,21 @@ void populateEpsonData(struct EpsonOptions options,
     if (options.temp_bit) {
       int temp = (rxByteBuf[idx] << 8 * 3) + (rxByteBuf[idx + 1] << 8 * 2) +
                  (rxByteBuf[idx + 2] << 8) + rxByteBuf[idx + 3];
+#if defined G330PDG0 || defined G366PDG0 || defined G370PDG0 || defined G370PDT0
+      epson_data->temperature = (temp)*EPSON_TEMP_SF / 65536 + 25;
+#else
       epson_data->temperature = (temp - 172621824) * EPSON_TEMP_SF / 65536 + 25;
+#endif  // defined G330PDG0 || defined G366PDG0 || defined G370PDG0 || defined
+        // G370PDT0
       idx += 4;
     } else {
       short temp = (rxByteBuf[idx] << 8) + rxByteBuf[idx + 1];
+#if defined G330PDG0 || defined G366PDG0 || defined G370PDG0 || defined G370PDT0
+      epson_data->temperature = (temp)*EPSON_TEMP_SF + 25;
+#else
       epson_data->temperature = (temp - 2634) * EPSON_TEMP_SF + 25;
+#endif  // defined G330PDG0 || defined G366PDG0 || defined G370PDG0 || defined
+        // G370PDT0
       idx += 2;
     }
 #ifdef DEBUG
@@ -553,14 +561,14 @@ int sensorDataReadBurstNOptions(struct EpsonOptions options,
 #endif
 
 // V340 does not support checksum, so just populate sensor data in structure
-#ifdef V340
+#ifdef V340PDD0
           populateEpsonData(options, epson_data);
           return OK;
-#endif
-          // All other supported models support checksum
-          // If checksum enabled, validate
-          // match = populate sensor data structure
-          // no match = print error msg and skip current sensor burst data
+#endif  // V340PDD0
+        // All other supported models support checksum
+        // If checksum enabled, validate
+        // match = populate sensor data structure
+        // no match = print error msg and skip current sensor burst data
           if (options.checksum_out == 1) {
             unsigned short checksum = 0;
             for (int i = 0; i < data_length - 2; i += 2) {

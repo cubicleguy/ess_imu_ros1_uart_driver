@@ -14,8 +14,9 @@
 //==============================================================================
 #include <stdint.h>
 #include <stdio.h>
-#include "sensor_epsonCommon.h"
+
 #include "main_helper.h"
+#include "sensor_epsonCommon.h"
 
 /*****************************************************************************
 ** Function name:       printHeaderRow

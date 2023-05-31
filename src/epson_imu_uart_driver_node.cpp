@@ -7,7 +7,7 @@
 //       (http://www.ros.org/reps/rep-0145.html).
 //     - If the IMU model supports quaternion output (currently supported only
 //     by
-//       G325/G365) orientation fields are updated in published topic
+//       G330/G365/G366) orientation fields are updated in published topic
 //       /epson_imu/data
 //     - If the IMU model does not support quaternion output (currently
 //       G320/G354/G364/G370/V340) orientation fields do not update in published
@@ -20,7 +20,7 @@
 //  Copyright (c) 2019, Carnegie Mellon University. All rights reserved.
 //
 //  Additional Code contributed:
-//  Copyright (c) 2020, Seiko Epson Corp. All rights reserved.
+//  Copyright (c) 2019, 2023, Seiko Epson Corp. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
 //  modification, are permitted provided that the following conditions are met:
@@ -62,6 +62,7 @@ extern "C" {
 #include <termios.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
+
 #include <iostream>
 #include <string>
 
@@ -125,10 +126,10 @@ bool init(const struct EpsonOptions& options) {
     seRelease();
     return false;
   }
-  return true;
-  ROS_INFO("Epson IMU initialized.");
-}
 
+  ROS_INFO("Epson IMU initialized.");
+  return true;
+}
 
 //=========================================================================
 //------------------------ IMU Identify PROD_ID & SER_NUM -----------------
@@ -141,34 +142,37 @@ std::string get_prod_id() {
   unsigned short prod_id4 = registerRead16(CMD_WINDOW1, ADDR_PROD_ID4, false);
 
   char myarray[] = {
-	static_cast<char>(prod_id1), static_cast<char>(prod_id1 >> 8),
-	static_cast<char>(prod_id2), static_cast<char>(prod_id2 >> 8),
-	static_cast<char>(prod_id3), static_cast<char>(prod_id3 >> 8),
-	static_cast<char>(prod_id4), static_cast<char>(prod_id4 >> 8)};
+      static_cast<char>(prod_id1), static_cast<char>(prod_id1 >> 8),
+      static_cast<char>(prod_id2), static_cast<char>(prod_id2 >> 8),
+      static_cast<char>(prod_id3), static_cast<char>(prod_id3 >> 8),
+      static_cast<char>(prod_id4), static_cast<char>(prod_id4 >> 8)};
   std::string prod_id(myarray);
   return prod_id;
 }
 
 std::string get_serial_id() {
   unsigned short ser_num1 =
-	registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM1, false);
+      registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM1, false);
   unsigned short ser_num2 =
-	registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM2, false);
+      registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM2, false);
   unsigned short ser_num3 =
-	registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM3, false);
+      registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM3, false);
   unsigned short ser_num4 =
-	registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM4, false);
+      registerRead16(CMD_WINDOW1, ADDR_SERIAL_NUM4, false);
 
   char myarray[] = {
-	static_cast<char>(ser_num1), static_cast<char>(ser_num1 >> 8),
-	static_cast<char>(ser_num2), static_cast<char>(ser_num2 >> 8),
-	static_cast<char>(ser_num3), static_cast<char>(ser_num3 >> 8),
-	static_cast<char>(ser_num4), static_cast<char>(ser_num4 >> 8)};
+      static_cast<char>(ser_num1), static_cast<char>(ser_num1 >> 8),
+      static_cast<char>(ser_num2), static_cast<char>(ser_num2 >> 8),
+      static_cast<char>(ser_num3), static_cast<char>(ser_num3 >> 8),
+      static_cast<char>(ser_num4), static_cast<char>(ser_num4 >> 8)};
   std::string ser_num(myarray);
   return ser_num;
 }
 
+void identify_build() { ROS_INFO_STREAM("Compiled for:\t" << BUILD_FOR); }
+
 void identify_device() {
+  ROS_INFO("Reading device info...");
   ROS_INFO("PRODUCT ID:\t%s", get_prod_id().c_str());
   ROS_INFO("SERIAL ID:\t%s", get_serial_id().c_str());
 }
@@ -201,9 +205,10 @@ class TimeCorrection {
 
 TimeCorrection::TimeCorrection() {
   // ALMOST_ROLLOVER value depends on system processing speed & overhead latency
-  // When accurate 1PPS signal is connected to GPIO2/EXT, counter reset should 
+  // When accurate 1PPS signal is connected to GPIO2/EXT, counter reset should
   // never go over ALMOST_ROLLOVER
-#if defined G320 || defined G354 || defined G364PDC0 || defined G364PDCA || defined V340
+#if defined G320PDG0 || defined G354PDH0 || defined G364PDC0 || \
+    defined G364PDCA || defined V340PDD0
   // Counter freq = 46875Hz, Max Count = 65535/46875 * 1e9
   MAX_COUNT = 1398080000;
   ALMOST_ROLLOVER = 1340000000;
@@ -244,7 +249,6 @@ TimeCorrection::TimeCorrection() {
 // less than ONE_SEC_NSEC (1e9)
 //=========================================================================
 ros::Time TimeCorrection::get_stamp(int count) {
-
   time_sec_current = ros::Time::now().toSec();
   time_nsec_current = ros::Time::now().nsec;
   std::cout.precision(20);
@@ -256,10 +260,10 @@ ros::Time TimeCorrection::get_stamp(int count) {
   if (count_diff < 0) {
     if (rollover) {
       count_diff = count + (MAX_COUNT - count_old);
-      std::cout << "Warning: time_correction enabled but IMU reset counter "
-                   "rollover detected. If 1PPS not connected to IMU GPIO2/EXT "
-                   "pin, disable time_correction."
-                << std::endl;
+      ROS_WARN(
+          "Warning: time_correction enabled but IMU external counter reset "
+          "rollover detected. Is 1PPS connected to IMU GPIO2/EXT pin? If not, "
+          "set time_correction=0 in .launch file.");
     } else {
       count_diff = count;
       count_corrected = 0;
@@ -348,8 +352,19 @@ int main(int argc, char** argv) {
 
   np.param("time_correction", time_correction, 0);
 
-  init(options);
+  if (!init(options)) return -1;
+  identify_build();
   identify_device();
+
+  int result = get_prod_id().compare(BUILD_FOR);
+  if (result == 0) {
+    ROS_INFO("OK: Build matches detected device");
+  } else {
+    ROS_ERROR("*** Build *mismatch* with detected device ***");
+    ROS_WARN(
+        "*** Check the CMakeLists.txt for setting a compatible IMU_MODEL \
+                  variable, modify as necessary, and rebuild the driver ***");
+  }
   sensorStart();
 
   struct EpsonData epson_data;
@@ -365,7 +380,7 @@ int main(int argc, char** argv) {
 
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("epson_imu", 1);
 #ifdef PUB_RPY
-  ROS_INFO("Euler Output");
+  ROS_INFO("Euler Output: SW Conversion from Quaternion.");
   ros::Publisher rpy_pub =
       nh.advertise<geometry_msgs::Vector3Stamped>("epson_imu_rpy", 1);
 #endif  // PUB_RPY
@@ -438,9 +453,12 @@ int main(int argc, char** argv) {
       rpy.vector.z = yaw;
       rpy_pub.publish(rpy);
 #endif  // PUB_RPY
+    } else {
+      ROS_WARN(
+          "Warning: Checksum error or incorrect delimiter bytes in imu_msg "
+          "detected");
     }
   }
-
   sensorStop();
   seDelayMS(1000);
   uartRelease(fd_serial);

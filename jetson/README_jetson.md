@@ -1,8 +1,21 @@
 # Epson IMU Usage on Nvidia Jetson TK1
 
+<!---toc start-->
+
+- [Epson IMU Usage on Nvidia Jetson TK1](#epson-imu-usage-on-nvidia-jetson-tk1)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installing L4T on Jetson TK1](#installing-l4t-on-jetson-tk1)
+    - [Update L4T on Jetson TK1](#update-l4t-on-jetson-tk1)
+    - [Update L4T FTDI USB Serial kernel driver on Jetson TK1](#update-l4t-ftdi-usb-serial-kernel-driver-on-jetson-tk1)
+    - [Installing ROS Indigo on L4T](#installing-ros-indigo-on-l4t)
+    - [Building and Installing Epson IMU ROS Driver](#building-and-installing-epson-imu-ros-driver)
+
+<!---toc end-->
+
 This is a general guide for installing and configuring the *Nvidia Jetson TK1* with Linux for Tegra (L4T) and *ROS Indigo* before making use of the Epson IMU UART ROS driver.
 
-Using the Epson IMU ROS driver on an embedded platform requires some additional steps for setting up *Ubuntu 14* and *ROS Indigo* environment compared 
+Using the Epson IMU ROS driver on an embedded platform requires some additional steps for setting up *Ubuntu 14* and *ROS Indigo* environment compared
 to PC Ubuntu + ROS Indigo/Kinetic system which is straight forward.
 
 ## Getting Started
@@ -20,7 +33,6 @@ This will require the following:
 - Nvidia Jetpack 2.3.1 software [See here](https://developer.nvidia.com/embedded/jetpack-2_3_1)
 - L4T v21.5 kernel sources [Download from here](http://developer.download.nvidia.com/embedded/L4T/r21_Release_v5.0/source/kernel_src.tbz2)
 - ROS Indigo (via download) [See here](https://wiki.ros.org/indigo/Installation/UbuntuARM)
-
 
 ### Installing L4T on Jetson TK1
 
@@ -53,35 +65,39 @@ From a console running on the Jetson TK1, run the commands:
 ```
 
 ### Update L4T FTDI USB Serial kernel driver on Jetson TK1
+
 By default, the L4T kernel will not support FTDI USB serial converters (these are needed for the Epson USB Evalboards), so the kernel module needs to be built and enabled.
 
 The procedure to enable the FTDI USB kernel driver is also described in https://elinux.org/Jetson/Tutorials/Program_An_Arduino
 
 An automated shell script can also be found here (not tested by author) https://github.com/jetsonhacks/buildJetsonFTDIModule
 
-
 - Download the kernel sources:
+
 ```
 wget http://developer.download.nvidia.com/embedded/L4T/r21_Release_v5.0/source/kernel_src.tbz2
 ```
 
 - Extract to your home directory:
+
 ```
 tar -xvf kernel_src.tbz2
 ```
 
 - Extract a copy current kernel configuration to extracted source folder:
+
 ```
 zcat /proc/config.gz > ~/kernel/.config
 ```
 
 - Execute menuconfig to start process of enabling the USB FTDI Serial Driver:
+
 ```
 sudo apt-get install ncurses-bin libncurses5-dev
 make menuconfig
 ```
 
-- In menuconfig, choose [M] in Device Drivers -> USB Support -> USB Serial Converter Support -> USB FTDI Single Port Serial Driver
+- In menuconfig, choose \[M\] in Device Drivers -> USB Support -> USB Serial Converter Support -> USB FTDI Single Port Serial Driver
 
 - Determine the CONFIG_LOCALVERSION run the command and write down the return value for future steps (CONFIG_LOCALVERSION i.e. "-gdacac96"):
 
@@ -100,6 +116,7 @@ uname -a
 - Save changes and exit from menuconfig
 
 - Build the kernel module:
+
 ```
 make prepare
 make modules_prepare
@@ -107,15 +124,18 @@ make M=drivers/usb/serial/
 ```
 
 - Copy the kernel module to the system location:
+
 ```
 sudo cp drivers/usb/serial/ftdi_sio.ko /lib/modules/$(uname -r)/kernel
 sudo depmod -a
 ```
 
 - Add your username to the dialout group to allow read/write permission to serial ports:
+
 ```
 sudo usermod -a -G dialout <username>
 ```
+
 - Reboot the Jetson TK1.
 
 ### Installing ROS Indigo on L4T
@@ -125,31 +145,35 @@ After updating Ubuntu 14, and enabling FTDI kernel module, the next step is to i
 Refer to the standard procedure for ARM platforms in the following link:
 [ROS Installation, Ubuntu ARM](http://wiki.ros.org/indigo/Installation/UbuntuARM)
 
-
 ### Building and Installing Epson IMU ROS Driver
 
-The Epson IMU ROS driver is designed to build in the ROS catkin build environment. 
-Therefore, an functional catkin workspace in ROS is a prerequisite. 
+The Epson IMU ROS driver is designed to build in the ROS catkin build environment.
+Therefore, an functional catkin workspace in ROS is a prerequisite.
 Refer to the ROS Tutorials Wiki for more info: [ROS Tutorial Wiki](https://wiki.ros.org/ROS/Tutorials#Beginner_Level)
 
-For more information on ROS & catkin setup refer to 
+For more information on ROS & catkin setup refer to
 [Installing and Configuring ROS Environment](https://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
 To install the Epson IMU ROS driver package:
+
 1. Place files (including folders) into a new folder within your catkin workspace "src" folder.
    For example, we recommend using the folder name "epson_imu_uart_driver"
+
 ```
    <catkin_workspace>/src/epson_imu_uart_driver/ <-- place files here
 ```
+
 2. Modify the CMakeLists.txt to select the correct Epson IMU model that is attached to the ROS system.
    Refer to the comment lines inside the CMakeLists.txt for additional info.
 
-3. From the catkin_workspace folder run "catkin_make" to build any ROS packages located in the <catkin_workspace>/src/ folder.
+3. From the catkin_workspace folder run "catkin_make" to build any ROS packages located in the \<catkin_workspace>/src/ folder.
+
 ```
    <catkin_workspace>/catkin_make
 ```
 
 The following is example of the output of the catkin_make:
+
 ```
 user@user-VirtualBox:~/catkin_ws$ catkin_make
 Base path: /home/user/catkin_ws
@@ -232,10 +256,11 @@ Scanning dependencies of target epson_imu_uart_driver_node
 [ 96%] Built target imu_filter_node
 [100%] Linking CXX executable /home/user/catkin_ws/devel/lib/epson_imu_uart_driver/epson_imu_uart_driver_node
 [100%] Built target epson_imu_uart_driver_node
-user@user-VirtualBox:~/catkin_ws$  
+user@user-VirtualBox:~/catkin_ws$
 ```
 
 4. Reload the current ROS environment variables that may have changed after the catkin build process.
+
 ```
    source <catkin_workspace>/devel/setup.bash
 ```
@@ -243,13 +268,15 @@ user@user-VirtualBox:~/catkin_ws$
 5. To start the Epson IMU ROS driver run the appropriate launch file (located in launch/) from console.
    Modify the launch file as necessary for your desired setting such as dout_rate, filter_sel, etc...
    For example, for the Epson G365 IMU:
+
 ```
    roslaunch epson_imu_uart_driver epson_g325_g365.launch
 ```
+
 Below is an example of console output when the Epson IMU ROS driver is correctly launched:
 
 ```
-user@user-VirtualBox:~/catkin_ws$ roslaunch epson_imu_uart_driver epson_g325_g365.launch 
+user@user-VirtualBox:~/catkin_ws$ roslaunch epson_imu_uart_driver epson_g325_g365.launch
 ... logging to /home/user/.ros/log/0c01e56e-9e88-11e9-ad70-0800277645e4/roslaunch-user-VirtualBox-3004.log
 Checking log directory for disk usage. This may take awhile.
 Press Ctrl-C to interrupt

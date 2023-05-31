@@ -58,29 +58,31 @@
 /*                   -- Commands --
 - ADDR_ address byte of transfer to select the register to access
 - CMD_  data byte of transfer to write to the register selected
-
+
 - All accesses are 16 bit transfers
 - For SPI IF:
-	- For SPI write accesses - 8-bit address with msb=1b (can be even or
-							   odd) + 8-bit write data
-							 - No response
-	- For SPI read accesses  - 8-bit address with msb=0b(even only) + 8-bit
-							   dummy data
-							 - Response is transferred on MOSI on next SPI
-                               access
-							 - Return value is 16-bit read data (high byte +
-                               low byte)
+        - For SPI write accesses - 8-bit address with msb=1b (can be even or
+                                                           odd) + 8-bit write
+data
+                                                         - No response
+        - For SPI read accesses  - 8-bit address with msb=0b(even only) + 8-bit
+                                                           dummy data
+                                                         - Response is
+transferred on MOSI on next SPI access
+                                                         - Return value is
+16-bit read data (high byte + low byte)
 - For UART IF:
-	- For UART write accesses - 8-bit address with msb=1b(can be even or
+        - For UART write accesses - 8-bit address with msb=1b(can be even or
                                 odd) + 8-bit write data + Delimiter Byte
-							  - No response
-	- For UART read accesses  - 8-bit address with msb=0b(even only) + 8-bit
+                                                          - No response
+        - For UART read accesses  - 8-bit address with msb=0b(even only) + 8-bit
                                 dummy data + Delimiter Byte
-							  - Response is transferred immediately
-							  - Return value consists of Register Read
-                                Address + 16-bit read data 
-								(high byte + low byte) + Delimiter Byte
-
+                                                          - Response is
+transferred immediately
+                                                          - Return value
+consists of Register Read Address + 16-bit read data (high byte + low byte) +
+Delimiter Byte
+
 - NOTE: Register Address Maps that depend on the WINDOW_ID (page) */
 
 // WINDOW_ID 0
@@ -106,8 +108,8 @@
 #define ADDR_ZACCL_HIGH 0x26    // ZACCL HIGH (W0)
 #define ADDR_ZACCL_LOW 0x28     // ZACCL LOW  (W0)
 
-#define ADDR_RT_DIAG_LOW 0x2B   // RT_DIAG LOW (W0)
-#define ADDR_ID_LOW 0x4C        // ID LOW (W0)
+#define ADDR_RT_DIAG_LOW 0x2B  // RT_DIAG LOW (W0)
+#define ADDR_ID_LOW 0x4C       // ID LOW (W0)
 
 #define ADDR_XDLTA_HIGH 0x64  // XDLTA HIGH (W0)
 #define ADDR_XDLTA_LOW 0x66   // XDLTA LOW  (W0)
@@ -123,30 +125,30 @@
 #define ADDR_ZDLTV_LOW 0x7A   // ZDLTV LOW  (W0)
 
 // WINDOW_ID 1
-#define ADDR_SIG_CTRL_LO 0x00     // SIG_CTRL Byte0 (W1)
-#define ADDR_SIG_CTRL_HI 0x01     // SIG_CTRL Byte1 (W1)
-#define ADDR_MSC_CTRL_LO 0x02     // MSC_CTRL Byte0 (W1)
-#define ADDR_MSC_CTRL_HI 0x03     // MSC_CTRL Byte1 (W1)
-#define ADDR_SMPL_CTRL_LO 0x04    // SMPL_CTRL Byte0 (W1)
-#define ADDR_SMPL_CTRL_HI 0x05    // SMPL_CTRL Byte1 (W1)
-#define ADDR_FILTER_CTRL_LO 0x06  // FILTER_CTRL Byte0 (W1)
-#define ADDR_FILTER_CTRL_HI 0x07  // FILTER_CTRL Byte1 (W1)
-#define ADDR_UART_CTRL_LO 0x08    // UART_CTRL Byte0 (W1)
-#define ADDR_UART_CTRL_HI 0x09    // UART_CTRL Byte1 (W1)
-#define ADDR_GLOB_CMD_LO 0x0A     // GLOB_CMD Byte0 (W1)
-#define ADDR_GLOB_CMD_HI 0x0B     // GLOB_CMD Byte1 (W1)
-#define ADDR_BURST_CTRL1_LO 0x0C  // BURST_CTRL1 Byte0 (W1)
-#define ADDR_BURST_CTRL1_HI 0x0D  // BURST_CTRL1 Byte1 (W1)
-#define ADDR_BURST_CTRL2_LO 0x0E  // BURST_CTRL2 Byte0 (W1)
-#define ADDR_BURST_CTRL2_HI 0x0F  // BURST_CTRL2 Byte1 (W1)
-#define ADDR_POL_CTRL_LO 0x10     // POL_CTRL Byte0 (W1)
-#define ADDR_POL_CTRL_HI 0x11     // POL_CTRL Byte1 (W1)
-#define ADDR_DLT_CTRL_LO 0x12     // DLT_CTRL Byte0 (W1)
-#define ADDR_DLT_CTRL_HI 0x13     // DLT_CTRL Byte1 (W1)
-#define ADDR_ATTI_CTRL_LO 0x14    // ATTI_CTRL Byte0 (W1)
-#define ADDR_ATTI_CTRL_HI 0x15    // ATTI_CTRL Byte1 (W1)
-#define ADDR_GLOB_CMD2_LO 0x16    // GLOB_CMD2 Byte0 (W1)
-#define ADDR_GLOB_CMD2_HI 0x17    // GLOB_CMD2 Byte1 (W1)
+#define ADDR_SIG_CTRL_LO 0x00       // SIG_CTRL Byte0 (W1)
+#define ADDR_SIG_CTRL_HI 0x01       // SIG_CTRL Byte1 (W1)
+#define ADDR_MSC_CTRL_LO 0x02       // MSC_CTRL Byte0 (W1)
+#define ADDR_MSC_CTRL_HI 0x03       // MSC_CTRL Byte1 (W1)
+#define ADDR_SMPL_CTRL_LO 0x04      // SMPL_CTRL Byte0 (W1)
+#define ADDR_SMPL_CTRL_HI 0x05      // SMPL_CTRL Byte1 (W1)
+#define ADDR_FILTER_CTRL_LO 0x06    // FILTER_CTRL Byte0 (W1)
+#define ADDR_FILTER_CTRL_HI 0x07    // FILTER_CTRL Byte1 (W1)
+#define ADDR_UART_CTRL_LO 0x08      // UART_CTRL Byte0 (W1)
+#define ADDR_UART_CTRL_HI 0x09      // UART_CTRL Byte1 (W1)
+#define ADDR_GLOB_CMD_LO 0x0A       // GLOB_CMD Byte0 (W1)
+#define ADDR_GLOB_CMD_HI 0x0B       // GLOB_CMD Byte1 (W1)
+#define ADDR_BURST_CTRL1_LO 0x0C    // BURST_CTRL1 Byte0 (W1)
+#define ADDR_BURST_CTRL1_HI 0x0D    // BURST_CTRL1 Byte1 (W1)
+#define ADDR_BURST_CTRL2_LO 0x0E    // BURST_CTRL2 Byte0 (W1)
+#define ADDR_BURST_CTRL2_HI 0x0F    // BURST_CTRL2 Byte1 (W1)
+#define ADDR_POL_CTRL_LO 0x10       // POL_CTRL Byte0 (W1)
+#define ADDR_POL_CTRL_HI 0x11       // POL_CTRL Byte1 (W1)
+#define ADDR_DLT_CTRL_LO 0x12       // DLT_CTRL Byte0 (W1)
+#define ADDR_DLT_CTRL_HI 0x13       // DLT_CTRL Byte1 (W1)
+#define ADDR_ATTI_CTRL_LO 0x14      // ATTI_CTRL Byte0 (W1)
+#define ADDR_ATTI_CTRL_HI 0x15      // ATTI_CTRL Byte1 (W1)
+#define ADDR_GLOB_CMD2_LO 0x16      // GLOB_CMD2 Byte0 (W1)
+#define ADDR_GLOB_CMD2_HI 0x17      // GLOB_CMD2 Byte1 (W1)
 #define ADDR_EXT_SYNC_CTRL_LO 0x18  // EXT_SYNC_CTRL Byte0 (W1)
 #define ADDR_EXT_SYNC_CTRL_HI 0x19  // EXT_SYNC_CTRL Byte1 (W1)
 

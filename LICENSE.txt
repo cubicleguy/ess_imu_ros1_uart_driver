@@ -1,11 +1,11 @@
-The Epson IMU C++ Wrapper ROS1 Node is released under BSD-3 license: 
+The Epson IMU C++ Wrapper ROS1 Node is released under BSD-3 license:
 src/epson_imu_uart_driver_node.cpp
 
 Original Code Development:
 Copyright (c) 2019, Carnegie Mellon University. All rights reserved.
 
 Additional Code contributed:
-Copyright (c) 2020, Seiko Epson Corp. All rights reserved.
+Copyright (c) 2020, 2023 Seiko Epson Corp. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:

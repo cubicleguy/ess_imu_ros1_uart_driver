@@ -17,17 +17,18 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <termios.h>
 #include <time.h>
 
 #include "hcl.h"
 #include "hcl_gpio.h"
+#include "hcl_uart.h"
 #include "main_helper.h"
 #include "sensor_epsonCommon.h"
 
-#include <termios.h>
-#include "hcl_uart.h"
-
 int fd_serial;
+
 // Modify below as needed for hardware
 const char *IMUSERIAL = "/dev/ttyUSB0";
 
@@ -36,6 +37,8 @@ const unsigned int NUM_SAMPLES = 100;
 
 int main(int argc, char *argv[]) {
   unsigned int sample = 0;
+  char prod_id[9];  // Device Product ID
+  char ser_id[9];   // Device Serial ID
 
   // Specify IMU options
   struct EpsonOptions options = {
@@ -51,10 +54,8 @@ int main(int argc, char *argv[]) {
       .accel_out = 1,
       .gyro_delta_out = 0,
       .accel_delta_out = 0,
-      .qtn_out =
-          0,  // Only valid for G365PDC1, G365PDF1, G325PDF1 otherwise ignored
-      .atti_out =
-          0,  // Only valid for G365PDC0, G365PDF0, G325PDF0 otherwise ignored
+      .qtn_out = 0,   // Only valid for G365, G330, G366 otherwise ignored
+      .atti_out = 0,  // Only valid for G365, G330, G366 otherwise ignored
       .gpio_out = 0,
       .count_out = 1,
       .checksum_out = 1,
@@ -79,10 +80,9 @@ int main(int argc, char *argv[]) {
       .dlt_ovf_en = 0,
       .dlt_range_ctrl = 8,
 
-      // NOTE:Only valid for G365PDCx, G365PDFx, G325PDFx otherwise ignored
+      // NOTE:  // Only valid for G330, G365,G366 otherwise ignored
       .atti_mode = 1,    // 0=Inclination mode 1=Euler mode
       .atti_conv = 0,    // Attitude Conversion Mode
-      // NOTE:Only valid for G365PDC1, G365PDF1, G325PDF1 otherwise ignored
       .atti_profile = 0  // Attitude Motion Profile 0=modeA 1=modeB 2=modeC
   };
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     seRelease();
     return -1;
   }
-  printf("...done.");
+  printf("...done.\r\n");
 
   // 3) Initialize UART Interface
   //    The baudrate value should be set the the same setting as currently
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
     seRelease();
     return -1;
   }
-  printf("...done.");
+  printf("...done.\r\n");
 
   // 4) Power on sequence - force sensor to config mode, HW reset sensor
   //      Check for errors
@@ -132,7 +132,19 @@ int main(int argc, char *argv[]) {
     seRelease();
     return -1;
   }
-  printf("...done.");
+  printf("...done.\r\n");
+
+  // Print out which model executable was compiled and identify model
+  printf("\r\nCompiled for:\t" BUILD_FOR);
+  printf("\r\nReading device info...");
+  if (strcmp(BUILD_FOR, getProductId(prod_id)) != 0) {
+    printf("\r\n*** Build *mismatch* with detected device ***");
+    printf(
+        "\r\n*** Ensure you specify a compatible 'MODEL=' variable when "
+        "running make when  rebuilding the driver ***\r\n");
+  }
+  printf("\r\nPRODUCT ID:\t%s", prod_id);
+  printf("\r\nSERIAL ID:\t%s", getSerialId(ser_id));
 
   // Initialize sensor with desired settings
   printf("\r\nInitializing Sensor...");
@@ -143,15 +155,14 @@ int main(int argc, char *argv[]) {
     seRelease();
     return -1;
   }
-  printf("...Epson IMU initialized.");
+  printf("...Epson IMU initialized.\r\n");
 
   // Initialize text files for data logs
   const time_t date =
       time(NULL);  // Functions for obtaining and printing time and date
 
-  printf("Date: ");
-  printf("%s", ctime(&date));
-  printf("\r\n...Epson IMU Logging.\r\n");
+  printf("Date: %s", ctime(&date));
+  printf("...Epson IMU Logging.\r\n");
   sensorStart();
   printHeaderRow(stdout, options);
   while (1) {
@@ -159,9 +170,10 @@ int main(int argc, char *argv[]) {
     // For UART interface, check if UART recv buffer contains a sensor sample
     // packet
     if (sensorDataReadyOptions(options)) {
-      sensorDataReadBurstNOptions(options, &epson_data);
-      printSensorRow(stdout, options, &epson_data, sample);
-      sample++;
+      if (sensorDataReadBurstNOptions(options, &epson_data) == OK) {
+        printSensorRow(stdout, options, &epson_data, sample);
+        sample++;
+      }
     }
     if (sample > (NUM_SAMPLES - 1)) break;
   }

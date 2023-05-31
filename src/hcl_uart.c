@@ -17,6 +17,7 @@
 //
 //==============================================================================
 #include "hcl_uart.h"
+
 #include <assert.h>
 #include <errno.h>  // Error number definitions
 #include <fcntl.h>  // File control definitions
@@ -26,6 +27,7 @@
 #include <sys/ioctl.h>  // Needed for ioctl library functions
 #include <termios.h>    // terminal io (serial port) interface
 #include <unistd.h>
+
 #include "hcl.h"
 #include "sensor_epsonCommon.h"
 
