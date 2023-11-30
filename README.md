@@ -1,3 +1,7 @@
+** This repo is deprecated and read-only **
+
+** Please use ess_imu_driver instead **
+
 # README for Epson IMU Driver using UART interface for ROS
 
 <!---toc start-->
